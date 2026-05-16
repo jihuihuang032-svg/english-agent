@@ -4,6 +4,7 @@ import { useState, useRef, useEffect } from 'react';
 import { Message } from '@/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
+import { useVoiceSettings } from '@/contexts/VoiceContext';
 
 interface GrammarError {
   type: string;
@@ -39,8 +40,11 @@ export default function ChatFlow({
   const [showGrammarTip, setShowGrammarTip] = useState(false);
   const [grammarResult, setGrammarResult] = useState<GrammarResult | null>(null);
   const [checkingGrammar, setCheckingGrammar] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
+  const [isLongPressing, setIsLongPressing] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const {
     isListening,
@@ -58,10 +62,9 @@ export default function ChatFlow({
     isSupported: synthesisSupported,
     speak,
     stop: stopSpeaking,
-    englishVoices,
-    selectedVoice,
-    setSelectedVoice,
   } = useSpeechSynthesis();
+  
+  const { selectedVoice } = useVoiceSettings();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
@@ -122,6 +125,24 @@ export default function ChatFlow({
       } catch (error) {
         console.error('Speech synthesis failed:', error);
       }
+    }
+  };
+
+  const handleLongPressStart = () => {
+    longPressTimerRef.current = setTimeout(() => {
+      setIsLongPressing(true);
+      startListening();
+    }, 500);
+  };
+
+  const handleLongPressEnd = () => {
+    if (longPressTimerRef.current) {
+      clearTimeout(longPressTimerRef.current);
+      longPressTimerRef.current = null;
+    }
+    if (isLongPressing) {
+      setIsLongPressing(false);
+      stopListening();
     }
   };
 
@@ -326,42 +347,68 @@ export default function ChatFlow({
       )}
 
       <form onSubmit={handleSubmit} className="flex-shrink-0 px-4 py-3 bg-white/80 backdrop-blur-md border-t border-gray-100 safe-area-bottom">
-        <div className="flex gap-2">
-          {speechSupported && (
-            <button
-              type="button"
-              onClick={toggleListening}
-              disabled={isLoading}
-              className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all active:scale-95 ${
-                isListening
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30'
-                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
-              } disabled:opacity-50 disabled:cursor-not-allowed`}
+        <div className="flex gap-2 items-end">
+          <button
+            type="button"
+            onClick={() => setShowMenu(!showMenu)}
+            className="flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full bg-gray-100 text-gray-600 hover:bg-gray-200 transition-all active:scale-95"
+          >
+            <svg
+              className={`w-5 h-5 transition-transform ${showMenu ? 'rotate-45' : ''}`}
+              fill="none"
+              stroke="currentColor"
+              viewBox="0 0 24 24"
             >
-              <svg
-                className="w-5 h-5"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M12 4v16m8-8H4"
+              />
+            </svg>
+          </button>
+          
+          {showMenu && (
+            <div className="absolute bottom-16 left-4 bg-white rounded-2xl shadow-xl border border-gray-100 p-2 min-w-[140px] z-10">
+              <button
+                onClick={() => {
+                  setShowMenu(false);
+                  inputRef.current?.focus();
+                }}
+                className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
               >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01.469-1.57m0 0a3 3 0 012.931-1.57A3 3 0 0114 8.5V11m0 0V8.5m0 0h3m-3 0h-3"
-                />
-              </svg>
-            </button>
+                <span>⌨️</span>
+                <span>输入框</span>
+              </button>
+              {speechSupported && (
+                <button
+                  onClick={() => {
+                    setShowMenu(false);
+                    toggleListening();
+                  }}
+                  className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                >
+                  <span>🎤</span>
+                  <span>录音</span>
+                </button>
+              )}
+            </div>
           )}
+          
           <input
             ref={inputRef}
             type="text"
             value={input || (isListening ? interimTranscript : '')}
             onChange={(e) => setInput(e.target.value)}
             placeholder={
-              isListening ? '正在听...' : '输入英语消息或点击麦克风说话'
+              isListening || isLongPressing ? '正在听...' : '长按此处录音，或输入文字'
             }
             disabled={isLoading}
+            onTouchStart={handleLongPressStart}
+            onTouchEnd={handleLongPressEnd}
+            onMouseDown={handleLongPressStart}
+            onMouseUp={handleLongPressEnd}
+            onMouseLeave={handleLongPressEnd}
             className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
           />
           <button
@@ -404,26 +451,10 @@ export default function ChatFlow({
             )}
           </button>
         </div>
-        {isListening && (
+        {(isListening || isLongPressing) && (
           <div className="mt-2 flex items-center justify-center gap-2 text-xs text-red-500">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span>正在录音...</span>
-          </div>
-        )}
-        {synthesisSupported && englishVoices.length > 1 && (
-          <div className="mt-2 flex items-center gap-2">
-            <span className="text-xs text-gray-500">语音：</span>
-            <select
-              value={selectedVoice}
-              onChange={(e) => setSelectedVoice(e.target.value)}
-              className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-blue-500"
-            >
-              {englishVoices.map((voice) => (
-                <option key={voice.name} value={voice.name}>
-                  {voice.name.replace('Microsoft ', '').replace('Google ', '')}
-                </option>
-              ))}
-            </select>
+            <span>正在录音，松开发送...</span>
           </div>
         )}
       </form>

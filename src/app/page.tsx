@@ -6,6 +6,7 @@ import { scenarios } from '@/data/scenarios';
 import ScenarioSelector from '@/components/ScenarioSelector';
 import ChatFlow from '@/components/ChatFlow';
 import CorrectionPanel from '@/components/CorrectionPanel';
+import { useVoiceSettings } from '@/contexts/VoiceContext';
 
 export default function Home() {
   const [selectedScenario, setSelectedScenario] = useState<Scenario | null>(null);
@@ -15,6 +16,9 @@ export default function Home() {
   const [showCorrectionPanel, setShowCorrectionPanel] = useState(false);
   const [showSettings, setShowSettings] = useState(false);
   const [accessToken, setAccessToken] = useState('');
+  const [showVoiceSelector, setShowVoiceSelector] = useState(false);
+  
+  const { selectedVoice, setSelectedVoice, englishVoices } = useVoiceSettings();
 
   useEffect(() => {
     if (typeof window !== 'undefined') {
@@ -247,12 +251,61 @@ export default function Home() {
         </header>
 
         {!selectedScenario ? (
-          <div className="flex-1 overflow-y-auto p-4 overscroll-contain">
-            <ScenarioSelector
-              scenarios={scenarios}
-              selectedScenario={selectedScenario}
-              onSelect={handleSelectScenario}
-            />
+          <div className="flex-1 overflow-y-auto overscroll-contain">
+            <div className="p-4 space-y-6">
+              <div className="text-center py-4">
+                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30">
+                  <span className="text-4xl">🗣️</span>
+                </div>
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
+                  英语口语练习
+                </h1>
+                <p className="text-sm text-gray-500">选择场景，开始你的英语之旅</p>
+              </div>
+
+              {englishVoices.length > 0 && (
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
+                      <span className="text-lg">🔊</span>
+                      播放语音
+                    </span>
+                    <button
+                      onClick={() => setShowVoiceSelector(!showVoiceSelector)}
+                      className="text-xs text-blue-500 hover:text-blue-600"
+                    >
+                      {showVoiceSelector ? '收起' : '更换'}
+                    </button>
+                  </div>
+                  <p className="text-xs text-gray-500 mb-2">
+                    当前：{selectedVoice.replace('Microsoft ', '').replace('Google ', '').substring(0, 20)}
+                  </p>
+                  {showVoiceSelector && (
+                    <div className="mt-3 space-y-2 max-h-40 overflow-y-auto">
+                      {englishVoices.map((voice) => (
+                        <button
+                          key={voice.name}
+                          onClick={() => setSelectedVoice(voice.name)}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
+                            selectedVoice === voice.name
+                              ? 'bg-blue-500 text-white'
+                              : 'bg-white hover:bg-gray-50 text-gray-700'
+                          }`}
+                        >
+                          {voice.name.replace('Microsoft ', '').replace('Google ', '')}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              )}
+
+              <ScenarioSelector
+                scenarios={scenarios}
+                selectedScenario={selectedScenario}
+                onSelect={handleSelectScenario}
+              />
+            </div>
           </div>
         ) : (
           <>
