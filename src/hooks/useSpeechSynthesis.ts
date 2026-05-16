@@ -5,18 +5,24 @@ import { useState, useRef, useCallback, useEffect } from 'react';
 interface UseSpeechSynthesisReturn {
   isSpeaking: boolean;
   isSupported: boolean;
-  speak: (text: string, lang?: string) => Promise<void>;
+  speak: (text: string, voiceName?: string) => Promise<void>;
   stop: () => void;
   voices: SpeechSynthesisVoice[];
+  englishVoices: SpeechSynthesisVoice[];
+  selectedVoice: string;
+  setSelectedVoice: (voice: string) => void;
 }
 
 export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voices, setVoices] = useState<SpeechSynthesisVoice[]>([]);
+  const [selectedVoice, setSelectedVoice] = useState<string>('');
   const synthesisRef = useRef<SpeechSynthesis | null>(null);
 
   const isSupported =
     typeof window !== 'undefined' && 'speechSynthesis' in window;
+
+  const englishVoices = voices.filter((voice) => voice.lang.startsWith('en'));
 
   useEffect(() => {
     if (!isSupported) return;
@@ -25,7 +31,24 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
 
     const loadVoices = () => {
       if (synthesisRef.current) {
-        setVoices(synthesisRef.current.getVoices());
+        const allVoices = synthesisRef.current.getVoices();
+        setVoices(allVoices);
+        
+        if (!selectedVoice) {
+          const englishVoice = allVoices.find(
+            (voice) =>
+              voice.lang.startsWith('en') && 
+              (voice.name.includes('Samantha') || 
+               voice.name.includes('Karen') ||
+               voice.name.includes('Google UK English Female') ||
+               voice.name.includes('Microsoft Zira') ||
+               voice.name.includes('Female'))
+          ) || allVoices.find((v) => v.lang.startsWith('en'));
+          
+          if (englishVoice) {
+            setSelectedVoice(englishVoice.name);
+          }
+        }
       }
     };
 
@@ -38,10 +61,10 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
         synthesisRef.current.cancel();
       }
     };
-  }, [isSupported]);
+  }, [isSupported, selectedVoice]);
 
   const speak = useCallback(
-    async (text: string, lang: string = 'en-US'): Promise<void> => {
+    async (text: string, voiceName?: string): Promise<void> => {
       if (!synthesisRef.current || !isSupported) {
         throw new Error('Speech synthesis not supported');
       }
@@ -50,17 +73,17 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
         synthesisRef.current!.cancel();
 
         const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
+        utterance.lang = 'en-US';
         utterance.rate = 0.9;
         utterance.pitch = 1;
         utterance.volume = 1;
 
-        const englishVoice = voices.find(
-          (voice) =>
-            voice.lang.startsWith('en') && voice.name.includes('Google')
-        );
-        if (englishVoice) {
-          utterance.voice = englishVoice;
+        const voiceToUse = voiceName || selectedVoice;
+        if (voiceToUse) {
+          const voice = voices.find((v) => v.name === voiceToUse);
+          if (voice) {
+            utterance.voice = voice;
+          }
         }
 
         utterance.onstart = () => {
@@ -80,7 +103,7 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
         synthesisRef.current!.speak(utterance);
       });
     },
-    [isSupported, voices]
+    [isSupported, voices, selectedVoice]
   );
 
   const stop = useCallback(() => {
@@ -96,5 +119,8 @@ export function useSpeechSynthesis(): UseSpeechSynthesisReturn {
     speak,
     stop,
     voices,
+    englishVoices,
+    selectedVoice,
+    setSelectedVoice,
   };
 }

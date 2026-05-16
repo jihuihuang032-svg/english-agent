@@ -178,14 +178,14 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="fixed inset-0 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+    <main className="fixed inset-0 overflow-hidden">
       <div className="h-full max-w-md mx-auto flex flex-col">
-        <header className="flex-shrink-0 bg-white shadow-sm border-b border-gray-200 px-4 py-3 safe-area-top">
+        <header className="flex-shrink-0 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 safe-area-top">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold text-gray-800">英语口语练习</h1>
+            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">英语口语练习</h1>
             <button
               onClick={() => setShowSettings(!showSettings)}
-              className="p-2 text-gray-500 hover:text-gray-700"
+              className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-gray-100 transition-colors"
               title="设置"
             >
               <svg
@@ -210,9 +210,9 @@ export default function Home() {
             </button>
           </div>
           {showSettings && (
-            <div className="mt-3 p-3 bg-gray-50 rounded-lg space-y-3">
+            <div className="mt-3 p-4 bg-gray-50/80 backdrop-blur-sm rounded-xl space-y-3">
               <div>
-                <p className="text-xs text-gray-600 mb-2">
+                <p className="text-xs text-gray-600 mb-2 font-medium">
                   访问令牌（可选，用于保护 API）
                 </p>
                 <div className="flex gap-2">
@@ -221,7 +221,7 @@ export default function Home() {
                     value={accessToken}
                     onChange={(e) => setAccessToken(e.target.value)}
                     placeholder="输入令牌..."
-                    className="flex-1 px-3 py-1 text-sm border border-gray-300 rounded focus:outline-none focus:border-blue-500"
+                    className="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all"
                   />
                   <button
                     onClick={handleSaveToken}

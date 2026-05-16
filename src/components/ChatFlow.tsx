@@ -58,6 +58,9 @@ export default function ChatFlow({
     isSupported: synthesisSupported,
     speak,
     stop: stopSpeaking,
+    englishVoices,
+    selectedVoice,
+    setSelectedVoice,
   } = useSpeechSynthesis();
 
   useEffect(() => {
@@ -115,7 +118,7 @@ export default function ChatFlow({
       stopSpeaking();
     } else {
       try {
-        await speak(text, 'en-US');
+        await speak(text);
       } catch (error) {
         console.error('Speech synthesis failed:', error);
       }
@@ -131,16 +134,19 @@ export default function ChatFlow({
 
   return (
     <div className="flex flex-col h-full">
-      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3">
+      <div className="flex-1 overflow-y-auto px-4 py-3 space-y-3 overscroll-contain">
         {messages.length === 0 ? (
           <div className="flex items-center justify-center h-full">
             <div className="text-center">
-              <p className="text-gray-400 mb-2">选择场景后开始对话</p>
+              <div className="w-16 h-16 mx-auto mb-4 bg-gradient-to-br from-blue-100 to-purple-100 rounded-full flex items-center justify-center">
+                <span className="text-3xl">🗣️</span>
+              </div>
+              <p className="text-gray-500 mb-2 font-medium">选择场景后开始对话</p>
               <p className="text-sm text-gray-400 mb-4">
                 用英语与 AI 进行口语练习
               </p>
               {speechSupported && (
-                <div className="flex items-center justify-center gap-2 text-xs text-blue-500">
+                <div className="flex items-center justify-center gap-2 text-xs text-blue-500 bg-blue-50 px-3 py-2 rounded-full">
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -168,31 +174,31 @@ export default function ChatFlow({
               }`}
             >
               <div
-                className={`max-w-[80%] ${
+                className={`max-w-[85%] ${
                   message.role === 'user'
-                    ? 'bg-blue-500 text-white rounded-2xl rounded-br-md'
-                    : 'bg-gray-100 text-gray-800 rounded-2xl rounded-bl-md'
-                } px-4 py-2`}
+                    ? 'message-user'
+                    : 'message-assistant'
+                } px-4 py-3`}
               >
                 <p className="text-sm leading-relaxed">{message.content}</p>
                 {message.translation && (
-                  <div className="mt-2 pt-2 border-t border-gray-300/30">
+                  <div className="mt-2 pt-2 border-t border-white/20">
                     <p className="text-xs opacity-80">{message.translation}</p>
                   </div>
                 )}
                 <p
-                  className={`text-xs mt-1 ${
+                  className={`text-xs mt-2 ${
                     message.role === 'user' ? 'text-blue-100' : 'text-gray-400'
                   }`}
                 >
                   {formatTime(message.timestamp)}
                 </p>
                 {message.role === 'assistant' && (
-                  <div className="mt-2 flex items-center gap-2">
+                  <div className="mt-2 flex items-center gap-3">
                     {!message.translation && (
                       <button
                         onClick={() => onTranslate(message.id)}
-                        className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1"
+                        className="text-xs text-blue-500 hover:text-blue-600 flex items-center gap-1 transition-colors"
                       >
                         <svg
                           className="w-3 h-3"
@@ -319,16 +325,16 @@ export default function ChatFlow({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="flex-shrink-0 px-4 py-3 bg-white border-t safe-area-bottom">
+      <form onSubmit={handleSubmit} className="flex-shrink-0 px-4 py-3 bg-white/80 backdrop-blur-md border-t border-gray-100 safe-area-bottom">
         <div className="flex gap-2">
           {speechSupported && (
             <button
               type="button"
               onClick={toggleListening}
               disabled={isLoading}
-              className={`flex-shrink-0 px-3 py-2 rounded-full transition-all ${
+              className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all active:scale-95 ${
                 isListening
-                  ? 'bg-red-500 text-white animate-pulse'
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
               } disabled:opacity-50 disabled:cursor-not-allowed`}
             >
@@ -356,7 +362,7 @@ export default function ChatFlow({
               isListening ? '正在听...' : '输入英语消息或点击麦克风说话'
             }
             disabled={isLoading}
-            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
+            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
           />
           <button
             type="submit"
@@ -365,7 +371,7 @@ export default function ChatFlow({
               isLoading ||
               checkingGrammar
             }
-            className="flex-shrink-0 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-shrink-0 w-10 h-10 flex items-center justify-center bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full hover:shadow-lg hover:shadow-blue-500/30 disabled:from-gray-300 disabled:to-gray-300 disabled:cursor-not-allowed transition-all active:scale-95"
           >
             {checkingGrammar ? (
               <svg
@@ -402,6 +408,22 @@ export default function ChatFlow({
           <div className="mt-2 flex items-center justify-center gap-2 text-xs text-red-500">
             <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
             <span>正在录音...</span>
+          </div>
+        )}
+        {synthesisSupported && englishVoices.length > 1 && (
+          <div className="mt-2 flex items-center gap-2">
+            <span className="text-xs text-gray-500">语音：</span>
+            <select
+              value={selectedVoice}
+              onChange={(e) => setSelectedVoice(e.target.value)}
+              className="flex-1 text-xs bg-gray-50 border border-gray-200 rounded-lg px-2 py-1 focus:outline-none focus:border-blue-500"
+            >
+              {englishVoices.map((voice) => (
+                <option key={voice.name} value={voice.name}>
+                  {voice.name.replace('Microsoft ', '').replace('Google ', '')}
+                </option>
+              ))}
+            </select>
           </div>
         )}
       </form>
