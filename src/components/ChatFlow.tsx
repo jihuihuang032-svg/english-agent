@@ -409,7 +409,9 @@ export default function ChatFlow({
             onMouseDown={handleLongPressStart}
             onMouseUp={handleLongPressEnd}
             onMouseLeave={handleLongPressEnd}
-            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
+            onContextMenu={(e) => e.preventDefault()}
+            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50 select-none"
+            style={{ WebkitUserSelect: 'none', userSelect: 'none' }}
           />
           <button
             type="submit"
