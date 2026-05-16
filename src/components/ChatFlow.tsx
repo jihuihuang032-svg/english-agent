@@ -40,6 +40,7 @@ export default function ChatFlow({
   const [showGrammarTip, setShowGrammarTip] = useState(false);
   const [grammarResult, setGrammarResult] = useState<GrammarResult | null>(null);
   const [checkingGrammar, setCheckingGrammar] = useState(false);
+  const [showMenu, setShowMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
