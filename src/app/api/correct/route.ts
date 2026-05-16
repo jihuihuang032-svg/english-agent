@@ -18,7 +18,7 @@ export async function POST(request: NextRequest) {
     }
 
     const api = getDeepSeekAPI();
-    const result = await api.correctChinese(text);
+    const result = await api.correctEnglish(text);
 
     return NextResponse.json(result);
   } catch (error) {

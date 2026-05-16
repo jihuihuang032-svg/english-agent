@@ -49,7 +49,7 @@ export default function CorrectionPanel({
               d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
             />
           </svg>
-          中文纠错提示区
+          英语语法纠错
         </h3>
       </div>
 
@@ -60,7 +60,7 @@ export default function CorrectionPanel({
               type="text"
               value={input}
               onChange={(e) => setInput(e.target.value)}
-              placeholder="输入中文文本进行纠错..."
+              placeholder="输入英语文本检查语法..."
               disabled={isLoading}
               className="flex-1 px-3 py-2 rounded-lg border border-gray-300 focus:outline-none focus:border-orange-500 focus:ring-1 focus:ring-orange-500 disabled:bg-gray-100 text-sm"
             />
@@ -108,7 +108,7 @@ export default function CorrectionPanel({
           </div>
         ) : (
           <p className="text-sm text-gray-400 text-center py-4">
-            输入中文文本，AI 将帮助检查语法和表达
+            输入英语文本，AI 将帮助检查语法和表达
           </p>
         )}
       </div>

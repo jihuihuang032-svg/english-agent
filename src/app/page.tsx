@@ -178,9 +178,9 @@ export default function Home() {
   }, []);
 
   return (
-    <main className="min-h-screen bg-gradient-to-b from-gray-50 to-gray-100">
-      <div className="max-w-md mx-auto h-screen flex flex-col">
-        <header className="bg-white shadow-sm border-b border-gray-200 px-4 py-3">
+    <main className="fixed inset-0 bg-gradient-to-b from-gray-50 to-gray-100 overflow-hidden">
+      <div className="h-full max-w-md mx-auto flex flex-col">
+        <header className="flex-shrink-0 bg-white shadow-sm border-b border-gray-200 px-4 py-3 safe-area-top">
           <div className="flex items-center justify-between">
             <h1 className="text-lg font-bold text-gray-800">英语口语练习</h1>
             <button
@@ -247,7 +247,7 @@ export default function Home() {
         </header>
 
         {!selectedScenario ? (
-          <div className="flex-1 overflow-y-auto p-4">
+          <div className="flex-1 overflow-y-auto p-4 overscroll-contain">
             <ScenarioSelector
               scenarios={scenarios}
               selectedScenario={selectedScenario}
@@ -256,7 +256,7 @@ export default function Home() {
           </div>
         ) : (
           <>
-            <div className="bg-white px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+            <div className="flex-shrink-0 bg-white px-4 py-2 border-b border-gray-200 flex items-center justify-between">
               <div className="flex items-center gap-2">
                 <span className="text-xl">{selectedScenario.icon}</span>
                 <span className="text-sm font-medium text-gray-700">
@@ -271,7 +271,7 @@ export default function Home() {
               </button>
             </div>
 
-            <div className="flex-1 overflow-hidden">
+            <div className="flex-1 overflow-hidden min-h-0">
               <ChatFlow
                 messages={messages}
                 isLoading={isLoading}
@@ -281,7 +281,7 @@ export default function Home() {
               />
             </div>
 
-            <div className="bg-white border-t border-gray-200">
+            <div className="flex-shrink-0 bg-white border-t border-gray-200 safe-area-bottom">
               <button
                 onClick={() => setShowCorrectionPanel(!showCorrectionPanel)}
                 className="w-full px-4 py-2 flex items-center justify-between text-sm text-gray-600 hover:bg-gray-50"
@@ -300,7 +300,7 @@ export default function Home() {
                       d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
                     />
                   </svg>
-                  中文纠错
+                  英语纠错
                 </span>
                 <svg
                   className={`w-4 h-4 transition-transform ${

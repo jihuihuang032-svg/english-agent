@@ -24,6 +24,11 @@ export async function POST(request: NextRequest) {
         role: 'system' as const,
         content: `你是一个英语语法纠错助手。请检查用户输入的英语文本，纠正语法错误和表达不当之处。
 
+重要规则：
+1. 忽略标点符号问题（用户使用语音输入，标点可能不准确）
+2. 只检查真正的语法错误、拼写错误、表达不当
+3. 不要纠正标点符号的缺失或错误
+
 返回格式（JSON）：
 {
   "hasErrors": true/false,
@@ -31,7 +36,7 @@ export async function POST(request: NextRequest) {
   "corrected": "纠正后的文本（如果没有错误则与原文相同）",
   "errors": [
     {
-      "type": "错误类型（如：grammar, spelling, punctuation, expression）",
+      "type": "错误类型（如：grammar, spelling, expression）",
       "original": "错误部分",
       "correction": "纠正部分",
       "explanation": "错误说明（用中文解释）"

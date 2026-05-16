@@ -319,14 +319,14 @@ export default function ChatFlow({
         </div>
       )}
 
-      <form onSubmit={handleSubmit} className="px-4 py-3 bg-white border-t">
+      <form onSubmit={handleSubmit} className="flex-shrink-0 px-4 py-3 bg-white border-t safe-area-bottom">
         <div className="flex gap-2">
           {speechSupported && (
             <button
               type="button"
               onClick={toggleListening}
               disabled={isLoading}
-              className={`px-3 py-2 rounded-full transition-all ${
+              className={`flex-shrink-0 px-3 py-2 rounded-full transition-all ${
                 isListening
                   ? 'bg-red-500 text-white animate-pulse'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
@@ -356,7 +356,7 @@ export default function ChatFlow({
               isListening ? '正在听...' : '输入英语消息或点击麦克风说话'
             }
             disabled={isLoading}
-            className="flex-1 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
+            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-300 focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm"
           />
           <button
             type="submit"
@@ -365,7 +365,7 @@ export default function ChatFlow({
               isLoading ||
               checkingGrammar
             }
-            className="px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
+            className="flex-shrink-0 px-4 py-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 disabled:bg-gray-300 disabled:cursor-not-allowed transition-colors"
           >
             {checkingGrammar ? (
               <svg
