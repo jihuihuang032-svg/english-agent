@@ -107,7 +107,7 @@ export class DeepSeekAPI {
     const response = await this.chat(messages, 0.3);
     
     const correctedMatch = response.match(/纠正后的文本：(.+)/);
-    const explanationMatch = response.match(/解释：(.+)/s);
+    const explanationMatch = response.match(/解释：([\s\S]+)/);
     
     return {
       corrected: correctedMatch?.[1]?.trim() || chineseText,
