@@ -17,9 +17,11 @@ export default function Home() {
   const [accessToken, setAccessToken] = useState('');
 
   useEffect(() => {
-    const savedToken = localStorage.getItem('access_token');
-    if (savedToken) {
-      setAccessToken(savedToken);
+    if (typeof window !== 'undefined') {
+      const savedToken = localStorage.getItem('access_token');
+      if (savedToken) {
+        setAccessToken(savedToken);
+      }
     }
   }, []);
 
