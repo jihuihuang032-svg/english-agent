@@ -41,12 +41,8 @@ export default function ChatFlow({
   const [grammarResult, setGrammarResult] = useState<GrammarResult | null>(null);
   const [checkingGrammar, setCheckingGrammar] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
-  const [isLongPressing, setIsLongPressing] = useState(false);
-  const [showInput, setShowInput] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
-  const longPressTimerRef = useRef<NodeJS.Timeout | null>(null);
-  const touchStartPosRef = useRef<{ x: number; y: number } | null>(null);
 
   const {
     isListening,
@@ -127,64 +123,6 @@ export default function ChatFlow({
       } catch (error) {
         console.error('Speech synthesis failed:', error);
       }
-    }
-  };
-
-  const handleLongPressStart = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    
-    if ('touches' in e) {
-      touchStartPosRef.current = {
-        x: e.touches[0].clientX,
-        y: e.touches[0].clientY,
-      };
-    }
-    
-    longPressTimerRef.current = setTimeout(() => {
-      setIsLongPressing(true);
-      startListening();
-    }, 400);
-  };
-
-  const handleLongPressEnd = (e: React.TouchEvent | React.MouseEvent) => {
-    e.preventDefault();
-    
-    if (longPressTimerRef.current) {
-      clearTimeout(longPressTimerRef.current);
-      longPressTimerRef.current = null;
-    }
-    if (isLongPressing) {
-      setIsLongPressing(false);
-      stopListening();
-    }
-    touchStartPosRef.current = null;
-  };
-
-  const handleTouchMove = (e: React.TouchEvent) => {
-    if (!touchStartPosRef.current || !isLongPressing) return;
-    
-    const moveThreshold = 30;
-    const currentX = e.touches[0].clientX;
-    const currentY = e.touches[0].clientY;
-    const deltaX = Math.abs(currentX - touchStartPosRef.current.x);
-    const deltaY = Math.abs(currentY - touchStartPosRef.current.y);
-    
-    if (deltaX > moveThreshold || deltaY > moveThreshold) {
-      setIsLongPressing(false);
-      stopListening();
-      if (longPressTimerRef.current) {
-        clearTimeout(longPressTimerRef.current);
-        longPressTimerRef.current = null;
-      }
-    }
-  };
-
-  const handleInputAreaClick = () => {
-    if (!isLongPressing) {
-      setShowInput(true);
-      setTimeout(() => {
-        inputRef.current?.focus();
-      }, 100);
     }
   };
 
@@ -388,8 +326,17 @@ export default function ChatFlow({
         </div>
       )}
 
+      {isListening && (
+        <div className="px-4 py-2 bg-red-50 border-t border-red-200">
+          <div className="flex items-center justify-center gap-2">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <p className="text-xs text-red-600 font-medium">正在录音...</p>
+          </div>
+        </div>
+      )}
+
       <form onSubmit={handleSubmit} className="flex-shrink-0 px-4 py-3 bg-white/80 backdrop-blur-md border-t border-gray-100 safe-area-bottom">
-        <div className="flex gap-2 items-end">
+        <div className="flex gap-2 items-center">
           <button
             type="button"
             onClick={() => setShowMenu(!showMenu)}
@@ -415,10 +362,7 @@ export default function ChatFlow({
               <button
                 onClick={() => {
                   setShowMenu(false);
-                  setShowInput(true);
-                  setTimeout(() => {
-                    inputRef.current?.focus();
-                  }, 100);
+                  inputRef.current?.focus();
                 }}
                 className="w-full text-left px-3 py-2 rounded-lg text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
               >
@@ -440,51 +384,43 @@ export default function ChatFlow({
             </div>
           )}
           
-          {!showInput ? (
-            <div
-              className={`flex-1 min-w-0 px-4 py-2 rounded-full border text-sm flex items-center justify-center transition-all ${
-                isLongPressing
-                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white border-transparent shadow-lg shadow-red-500/30'
-                  : 'bg-gray-50/50 border-gray-200 text-gray-500'
-              }`}
-              onTouchStart={handleLongPressStart}
-              onTouchEnd={handleLongPressEnd}
-              onTouchMove={handleTouchMove}
-              onMouseDown={handleLongPressStart}
-              onMouseUp={handleLongPressEnd}
-              onMouseLeave={handleLongPressEnd}
-              onClick={handleInputAreaClick}
-            >
-              {isLongPressing ? (
-                <span className="flex items-center gap-2">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse" />
-                  松开发送
-                </span>
-              ) : (
-                <span className="flex items-center gap-2">
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01.469-1.57m0 0a3 3 0 012.931-1.57A3 3 0 0114 8.5V11m0 0V8.5m0 0h3m-3 0h-3" />
-                  </svg>
-                  长按录音，点击输入
-                </span>
-              )}
-            </div>
-          ) : (
-            <input
-              ref={inputRef}
-              type="text"
-              value={input || (isListening ? interimTranscript : '')}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder={isListening ? '正在听...' : '输入英语消息...'}
+          <input
+            ref={inputRef}
+            type="text"
+            value={input || (isListening ? interimTranscript : '')}
+            onChange={(e) => setInput(e.target.value)}
+            placeholder={isListening ? '正在听...' : '输入英语消息...'}
+            disabled={isLoading}
+            className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
+          />
+          
+          {speechSupported && (
+            <button
+              type="button"
+              onClick={toggleListening}
               disabled={isLoading}
-              onBlur={() => {
-                if (!input.trim() && !isListening) {
-                  setShowInput(false);
-                }
-              }}
-              className="flex-1 min-w-0 px-4 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
-            />
+              className={`flex-shrink-0 w-10 h-10 flex items-center justify-center rounded-full transition-all active:scale-95 ${
+                isListening
+                  ? 'bg-gradient-to-r from-red-500 to-pink-500 text-white shadow-lg shadow-red-500/30'
+                  : 'bg-gray-100 text-gray-600 hover:bg-gray-200'
+              }`}
+            >
+              <svg
+                className="w-5 h-5"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01.469-1.57m0 0a3 3 0 012.931-1.57A3 3 0 0114 8.5V11m0 0V8.5m0 0h3m-3 0h-3"
+                />
+              </svg>
+            </button>
           )}
+          
           <button
             type="submit"
             disabled={
