@@ -14,6 +14,8 @@ interface UseSpeechRecognitionReturn {
   resetTranscript: () => void;
 }
 
+type SpeechRecognitionInstance = InstanceType<Window['SpeechRecognition']>;
+
 export function useSpeechRecognition(
   language: string = 'en-US'
 ): UseSpeechRecognitionReturn {
@@ -21,7 +23,7 @@ export function useSpeechRecognition(
   const [transcript, setTranscript] = useState('');
   const [interimTranscript, setInterimTranscript] = useState('');
   const [error, setError] = useState<string | null>(null);
-  const recognitionRef = useRef<SpeechRecognition | null>(null);
+  const recognitionRef = useRef<SpeechRecognitionInstance | null>(null);
 
   const isSupported =
     typeof window !== 'undefined' &&
