@@ -391,7 +391,7 @@ export default function ChatFlow({
             onChange={(e) => setInput(e.target.value)}
             placeholder={isListening ? '正在听...' : '输入英语消息...'}
             disabled={isLoading}
-            className="flex-1 min-w-0 px-3 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50"
+            className="flex-1 min-w-0 px-3 py-2 rounded-full border border-gray-200 focus:outline-none focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 disabled:bg-gray-100 disabled:cursor-not-allowed text-sm bg-gray-50/50 text-gray-900 placeholder:text-gray-400"
           />
           
           {speechSupported && (
