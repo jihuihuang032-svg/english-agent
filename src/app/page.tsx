@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useCallback, useEffect } from 'react';
-import { Message, Scenario, Correction } from '@/types';
+import { Message, Scenario, Correction, GrammarResult } from '@/types';
 import { scenarios } from '@/data/scenarios';
 import ScenarioSelector from '@/components/ScenarioSelector';
 import ChatFlow from '@/components/ChatFlow';
@@ -40,7 +40,7 @@ export default function Home() {
   const generateId = () => Math.random().toString(36).substring(2, 15);
 
   const handleSendMessage = useCallback(
-    async (content: string) => {
+    async (content: string, grammarResult?: GrammarResult) => {
       if (!selectedScenario) return;
 
       const userMessage: Message = {
@@ -48,6 +48,7 @@ export default function Home() {
         role: 'user',
         content,
         timestamp: new Date(),
+        grammarResult,
       };
 
       setMessages((prev) => [...prev, userMessage]);

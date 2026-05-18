@@ -1,9 +1,25 @@
+export interface GrammarError {
+  type: string;
+  original: string;
+  correction: string;
+  explanation: string;
+}
+
+export interface GrammarResult {
+  hasErrors: boolean;
+  original: string;
+  corrected: string;
+  errors: GrammarError[];
+  suggestions: string;
+}
+
 export interface Message {
   id: string;
   role: 'user' | 'assistant';
   content: string;
   translation?: string;
   timestamp: Date;
+  grammarResult?: GrammarResult;
 }
 
 export interface Scenario {

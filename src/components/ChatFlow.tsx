@@ -1,30 +1,15 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { Message } from '@/types';
+import { Message, GrammarResult } from '@/types';
 import { useSpeechRecognition } from '@/hooks/useSpeechRecognition';
 import { useSpeechSynthesis } from '@/hooks/useSpeechSynthesis';
 import { useVoiceSettings } from '@/contexts/VoiceContext';
 
-interface GrammarError {
-  type: string;
-  original: string;
-  correction: string;
-  explanation: string;
-}
-
-interface GrammarResult {
-  hasErrors: boolean;
-  original: string;
-  corrected: string;
-  errors: GrammarError[];
-  suggestions: string;
-}
-
 interface ChatFlowProps {
   messages: Message[];
   isLoading: boolean;
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string, grammarResult?: GrammarResult) => void;
   onTranslate: (messageId: string) => Promise<void>;
   onGrammarCheck?: (text: string) => Promise<GrammarResult>;
 }
@@ -37,8 +22,6 @@ export default function ChatFlow({
   onGrammarCheck,
 }: ChatFlowProps) {
   const [input, setInput] = useState('');
-  const [showGrammarTip, setShowGrammarTip] = useState(false);
-  const [grammarResult, setGrammarResult] = useState<GrammarResult | null>(null);
   const [checkingGrammar, setCheckingGrammar] = useState(false);
   const [showMenu, setShowMenu] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -84,15 +67,12 @@ export default function ChatFlow({
     e.preventDefault();
     if (input.trim() && !isLoading) {
       const messageText = input.trim();
+      let grammarResult: GrammarResult | undefined;
       
       if (onGrammarCheck) {
         setCheckingGrammar(true);
         try {
-          const result = await onGrammarCheck(messageText);
-          setGrammarResult(result);
-          if (result.hasErrors) {
-            setShowGrammarTip(true);
-          }
+          grammarResult = await onGrammarCheck(messageText);
         } catch (error) {
           console.error('Grammar check failed:', error);
         } finally {
@@ -100,7 +80,7 @@ export default function ChatFlow({
         }
       }
       
-      onSendMessage(messageText);
+      onSendMessage(messageText, grammarResult);
       setInput('');
       inputRef.current?.focus();
     }
@@ -182,6 +162,25 @@ export default function ChatFlow({
                 } px-4 py-3`}
               >
                 <p className="text-sm leading-relaxed">{message.content}</p>
+                
+                {message.role === 'user' && message.grammarResult && message.grammarResult.hasErrors && (
+                  <div className="mt-2 pt-2 border-t border-white/20">
+                    <p className="text-xs font-medium opacity-90 mb-1">💡 语法提示</p>
+                    <p className="text-xs opacity-80">{message.grammarResult.suggestions}</p>
+                    {message.grammarResult.errors.length > 0 && (
+                      <div className="mt-1 space-y-1">
+                        {message.grammarResult.errors.map((error, index) => (
+                          <div key={index} className="text-xs bg-white/20 rounded px-2 py-1">
+                            <span className="line-through opacity-70">{error.original}</span>
+                            <span className="mx-1">→</span>
+                            <span className="font-medium">{error.correction}</span>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                )}
+                
                 {message.translation && (
                   <div className="mt-2 pt-2 border-t border-white/20">
                     <p className="text-xs opacity-80">{message.translation}</p>
@@ -257,60 +256,6 @@ export default function ChatFlow({
         )}
         <div ref={messagesEndRef} />
       </div>
-
-      {showGrammarTip && grammarResult && grammarResult.hasErrors && (
-        <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-200">
-          <div className="flex items-start justify-between">
-            <div className="flex-1">
-              <p className="text-xs font-medium text-yellow-800 mb-1">
-                💡 语法提示
-              </p>
-              <p className="text-xs text-yellow-700">
-                {grammarResult.suggestions}
-              </p>
-              {grammarResult.errors.length > 0 && (
-                <div className="mt-2 space-y-1">
-                  {grammarResult.errors.map((error, index) => (
-                    <div
-                      key={index}
-                      className="text-xs bg-white p-2 rounded border border-yellow-200"
-                    >
-                      <span className="text-red-600 line-through">
-                        {error.original}
-                      </span>
-                      <span className="mx-1">→</span>
-                      <span className="text-green-600 font-medium">
-                        {error.correction}
-                      </span>
-                      <p className="text-gray-600 mt-1">
-                        {error.explanation}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              )}
-            </div>
-            <button
-              onClick={() => setShowGrammarTip(false)}
-              className="ml-2 text-yellow-600 hover:text-yellow-800"
-            >
-              <svg
-                className="w-4 h-4"
-                fill="none"
-                stroke="currentColor"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M6 18L18 6M6 6l12 12"
-                />
-              </svg>
-            </button>
-          </div>
-        </div>
-      )}
 
       {needsHTTPS && (
         <div className="px-4 py-2 bg-yellow-50 border-t border-yellow-200">
