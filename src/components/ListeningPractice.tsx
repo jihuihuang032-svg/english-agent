@@ -5,53 +5,53 @@ interface ListeningPracticeProps {
 }
 
 export default function ListeningPractice({ onBack }: ListeningPracticeProps) {
-  const bbcResources = [
+  const bilibiliResources = [
     {
       id: '6minute',
-      title: '6 Minute English',
-      description: '6分钟英语，适合初中级学习者，每期一个话题',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/6-minute-english',
+      title: 'BBC 6分钟英语',
+      description: '每期6分钟，适合初中级学习者',
+      url: 'https://search.bilibili.com/all?keyword=BBC+6%E5%88%86%E9%92%9F%E8%8B%B1%E8%AF%AD',
       icon: '📻',
       color: 'from-blue-500 to-cyan-500',
     },
     {
-      id: 'english-at-work',
-      title: 'English at Work',
-      description: '职场英语，学习工作中的实用表达',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/english-at-work',
-      icon: '💼',
-      color: 'from-purple-500 to-pink-500',
-    },
-    {
-      id: 'the-english-we-speak',
-      title: 'The English We Speak',
-      description: '地道英语表达，学习日常口语和俚语',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/the-english-we-speak',
-      icon: '🗣️',
-      color: 'from-green-500 to-teal-500',
-    },
-    {
       id: 'pronunciation',
-      title: 'Pronunciation',
-      description: '发音技巧，改善你的英语发音',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/pronunciation',
+      title: '英语发音技巧',
+      description: '改善发音，说得更地道',
+      url: 'https://search.bilibili.com/all?keyword=%E8%8B%B1%E8%AF%AD%E5%8F%91%E9%9F%B3%E6%8A%80%E5%B7%A7',
       icon: '🎵',
       color: 'from-orange-500 to-red-500',
     },
     {
-      id: 'lingohack',
-      title: 'Lingohack',
-      description: '新闻英语，通过真实新闻学习词汇',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/lingohack',
-      icon: '📰',
+      id: 'daily',
+      title: '日常英语对话',
+      description: '生活场景实用表达',
+      url: 'https://search.bilibili.com/all?keyword=%E6%97%A5%E5%B8%B8%E8%8B%B1%E8%AF%AD%E5%AF%B9%E8%AF%9D',
+      icon: '🗣️',
+      color: 'from-green-500 to-teal-500',
+    },
+    {
+      id: 'business',
+      title: '商务英语',
+      description: '职场沟通必备技能',
+      url: 'https://search.bilibili.com/all?keyword=%E5%95%86%E5%8A%A1%E8%8B%B1%E8%AF%AD',
+      icon: '💼',
+      color: 'from-purple-500 to-pink-500',
+    },
+    {
+      id: 'travel',
+      title: '旅游英语',
+      description: '出国旅行实用表达',
+      url: 'https://search.bilibili.com/all?keyword=%E6%97%85%E6%B8%B8%E8%8B%B1%E8%AF%AD',
+      icon: '✈️',
       color: 'from-indigo-500 to-blue-500',
     },
     {
-      id: 'drama',
-      title: 'Drama',
-      description: '英语广播剧，通过故事学习英语',
-      url: 'https://www.bbc.co.uk/learningenglish/english/features/drama',
-      icon: '🎬',
+      id: 'listening',
+      title: '英语听力训练',
+      description: '提升听力理解能力',
+      url: 'https://search.bilibili.com/all?keyword=%E8%8B%B1%E8%AF%AD%E5%90%AC%E5%8A%9B%E8%AE%AD%E7%BB%83',
+      icon: '🎧',
       color: 'from-rose-500 to-orange-500',
     },
   ];
@@ -81,28 +81,28 @@ export default function ListeningPractice({ onBack }: ListeningPracticeProps) {
       </header>
 
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
+        <div className="bg-gradient-to-r from-pink-50 to-red-50 rounded-2xl p-4 border border-pink-100">
           <div className="flex items-center gap-3 mb-3">
-            <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-xl flex items-center justify-center">
-              <span className="text-2xl">🌐</span>
+            <div className="w-12 h-12 bg-gradient-to-r from-pink-500 to-red-500 rounded-xl flex items-center justify-center">
+              <span className="text-2xl">📺</span>
             </div>
             <div>
-              <h2 className="font-semibold text-gray-800">BBC Learning English</h2>
-              <p className="text-xs text-gray-500">全球最受欢迎的英语学习资源</p>
+              <h2 className="font-semibold text-gray-800">B站英语学习资源</h2>
+              <p className="text-xs text-gray-500">国内可直接访问，海量学习视频</p>
             </div>
           </div>
           <button
-            onClick={() => handleOpen('https://www.bbc.co.uk/learningenglish')}
-            className="w-full py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-xl font-medium hover:shadow-lg transition-all active:scale-[0.98]"
+            onClick={() => handleOpen('https://www.bilibili.com')}
+            className="w-full py-3 bg-gradient-to-r from-pink-500 to-red-500 text-white rounded-xl font-medium hover:shadow-lg transition-all active:scale-[0.98]"
           >
-            访问 BBC Learning English 官网
+            打开 B站 首页
           </button>
         </div>
 
         <div className="space-y-3">
-          <h3 className="font-semibold text-gray-800 px-1">📚 推荐栏目</h3>
+          <h3 className="font-semibold text-gray-800 px-1">📚 推荐搜索</h3>
           
-          {bbcResources.map((resource) => (
+          {bilibiliResources.map((resource) => (
             <button
               key={resource.id}
               onClick={() => handleOpen(resource.url)}
@@ -114,7 +114,7 @@ export default function ListeningPractice({ onBack }: ListeningPracticeProps) {
                 </div>
                 <div className="flex-1 min-w-0">
                   <h4 className="font-medium text-gray-800">{resource.title}</h4>
-                  <p className="text-xs text-gray-500 mt-0.5 line-clamp-2">{resource.description}</p>
+                  <p className="text-xs text-gray-500 mt-0.5">{resource.description}</p>
                 </div>
                 <svg className="w-5 h-5 text-gray-400 flex-shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
@@ -130,7 +130,7 @@ export default function ListeningPractice({ onBack }: ListeningPracticeProps) {
             <div>
               <h4 className="font-medium text-yellow-800 text-sm">使用提示</h4>
               <p className="text-xs text-yellow-700 mt-1">
-                BBC Learning English 提供音频、视频和文本材料。建议先听一遍，再看文本，最后跟读练习。
+                点击卡片会跳转到 B站 搜索对应内容。建议选择播放量高、有字幕的视频学习。
               </p>
             </div>
           </div>

@@ -7,6 +7,7 @@ import ScenarioSelector from '@/components/ScenarioSelector';
 import ChatFlow from '@/components/ChatFlow';
 import CorrectionPanel from '@/components/CorrectionPanel';
 import ListeningPractice from '@/components/ListeningPractice';
+import SpeakingTemplates from '@/components/SpeakingTemplates';
 import { useVoiceSettings } from '@/contexts/VoiceContext';
 
 export default function Home() {
@@ -18,6 +19,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [showVoiceSelector, setShowVoiceSelector] = useState(false);
+  const [showSpeakingTemplates, setShowSpeakingTemplates] = useState(false);
   const [showListening, setShowListening] = useState(false);
   
   const { selectedVoice, setSelectedVoice, englishVoices } = useVoiceSettings();
@@ -189,7 +191,7 @@ export default function Home() {
       <div className="h-full max-w-md mx-auto flex flex-col">
         <header className="flex-shrink-0 bg-white/80 backdrop-blur-md border-b border-gray-100 px-4 py-3 safe-area-top">
           <div className="flex items-center justify-between">
-            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">英语口语练习</h1>
+            <h1 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">英语学习助手</h1>
             <button
               onClick={() => setShowSettings(!showSettings)}
               className="p-2 text-gray-500 hover:text-blue-600 rounded-full hover:bg-gray-100 transition-colors"
@@ -332,6 +334,24 @@ export default function Home() {
                   <h2 className="font-semibold text-gray-800">口语练习</h2>
                 </div>
                 
+                <button
+                  onClick={() => setShowSpeakingTemplates(true)}
+                  className="w-full bg-gradient-to-r from-purple-500 to-pink-500 rounded-2xl p-4 text-left shadow-lg shadow-purple-500/20 hover:shadow-xl transition-all active:scale-[0.98]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                      <span className="text-2xl">📝</span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white">口语模板</h3>
+                      <p className="text-sm text-white/80">不知道怎么开口？看这里</p>
+                    </div>
+                    <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+                
                 <ScenarioSelector
                   scenarios={scenarios}
                   selectedScenario={selectedScenario}
@@ -421,6 +441,12 @@ export default function Home() {
       {showListening && (
         <div className="fixed inset-0 bg-white z-50">
           <ListeningPractice onBack={() => setShowListening(false)} />
+        </div>
+      )}
+
+      {showSpeakingTemplates && (
+        <div className="fixed inset-0 bg-white z-50">
+          <SpeakingTemplates onBack={() => setShowSpeakingTemplates(false)} />
         </div>
       )}
     </main>
