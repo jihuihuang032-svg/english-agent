@@ -256,22 +256,19 @@ export default function Home() {
         {!selectedScenario ? (
           <div className="flex-1 overflow-y-auto overscroll-contain">
             <div className="p-4 space-y-6">
-              <div className="text-center py-4">
-                <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500 to-purple-500 rounded-3xl flex items-center justify-center shadow-xl shadow-blue-500/30">
-                  <span className="text-4xl">🗣️</span>
-                </div>
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-2">
-                  英语口语练习
+              <div className="text-center py-2">
+                <h1 className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-1">
+                  英语学习助手
                 </h1>
-                <p className="text-sm text-gray-500">选择场景，开始你的英语之旅</p>
+                <p className="text-sm text-gray-500">听说读写，全面提升</p>
               </div>
 
               {englishVoices.length > 0 && (
-                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-4 border border-blue-100">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm font-medium text-gray-700 flex items-center gap-2">
-                      <span className="text-lg">🔊</span>
-                      播放语音
+                <div className="bg-gradient-to-r from-blue-50 to-purple-50 rounded-2xl p-3 border border-blue-100">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs font-medium text-gray-700 flex items-center gap-2">
+                      <span>🔊</span>
+                      <span className="truncate max-w-[180px]">{selectedVoice.replace('Microsoft ', '').replace('Google ', '').substring(0, 25)}</span>
                     </span>
                     <button
                       onClick={() => setShowVoiceSelector(!showVoiceSelector)}
@@ -280,16 +277,13 @@ export default function Home() {
                       {showVoiceSelector ? '收起' : '更换'}
                     </button>
                   </div>
-                  <p className="text-xs text-gray-500 mb-2">
-                    当前：{selectedVoice.replace('Microsoft ', '').replace('Google ', '').substring(0, 20)}
-                  </p>
                   {showVoiceSelector && (
-                    <div className="mt-3 space-y-2 max-h-40 overflow-y-auto">
+                    <div className="mt-2 space-y-1 max-h-32 overflow-y-auto">
                       {englishVoices.map((voice) => (
                         <button
                           key={voice.name}
                           onClick={() => setSelectedVoice(voice.name)}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-xs transition-all ${
+                          className={`w-full text-left px-2 py-1.5 rounded-lg text-xs transition-all ${
                             selectedVoice === voice.name
                               ? 'bg-blue-500 text-white'
                               : 'bg-white hover:bg-gray-50 text-gray-700'
@@ -303,29 +297,47 @@ export default function Home() {
                 </div>
               )}
 
-              <button
-                onClick={() => setShowListening(true)}
-                className="w-full bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-4 text-left shadow-lg shadow-green-500/20 hover:shadow-xl transition-all active:scale-[0.98]"
-              >
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
-                    <span className="text-2xl">🎧</span>
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <div className="w-8 h-8 bg-gradient-to-r from-green-500 to-teal-500 rounded-lg flex items-center justify-center">
+                    <span className="text-lg">🎧</span>
                   </div>
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-white">听力练习</h3>
-                    <p className="text-sm text-white/80">BBC Learning English 视频学习</p>
-                  </div>
-                  <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                  </svg>
+                  <h2 className="font-semibold text-gray-800">听力练习</h2>
                 </div>
-              </button>
+                
+                <button
+                  onClick={() => setShowListening(true)}
+                  className="w-full bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-4 text-left shadow-lg shadow-green-500/20 hover:shadow-xl transition-all active:scale-[0.98]"
+                >
+                  <div className="flex items-center gap-3">
+                    <div className="w-14 h-14 bg-white/20 rounded-xl flex items-center justify-center">
+                      <span className="text-3xl">🌐</span>
+                    </div>
+                    <div className="flex-1">
+                      <h3 className="font-semibold text-white text-lg">BBC Learning English</h3>
+                      <p className="text-sm text-white/80">6分钟英语、发音技巧、职场英语...</p>
+                    </div>
+                    <svg className="w-6 h-6 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </button>
+              </div>
 
-              <ScenarioSelector
-                scenarios={scenarios}
-                selectedScenario={selectedScenario}
-                onSelect={handleSelectScenario}
-              />
+              <div className="space-y-3">
+                <div className="flex items-center gap-2 px-1">
+                  <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <span className="text-lg">🗣️</span>
+                  </div>
+                  <h2 className="font-semibold text-gray-800">口语练习</h2>
+                </div>
+                
+                <ScenarioSelector
+                  scenarios={scenarios}
+                  selectedScenario={selectedScenario}
+                  onSelect={handleSelectScenario}
+                />
+              </div>
             </div>
           </div>
         ) : (
