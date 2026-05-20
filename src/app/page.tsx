@@ -6,6 +6,7 @@ import { scenarios } from '@/data/scenarios';
 import ScenarioSelector from '@/components/ScenarioSelector';
 import ChatFlow from '@/components/ChatFlow';
 import CorrectionPanel from '@/components/CorrectionPanel';
+import ListeningPractice from '@/components/ListeningPractice';
 import { useVoiceSettings } from '@/contexts/VoiceContext';
 
 export default function Home() {
@@ -17,6 +18,7 @@ export default function Home() {
   const [showSettings, setShowSettings] = useState(false);
   const [accessToken, setAccessToken] = useState('');
   const [showVoiceSelector, setShowVoiceSelector] = useState(false);
+  const [showListening, setShowListening] = useState(false);
   
   const { selectedVoice, setSelectedVoice, englishVoices } = useVoiceSettings();
 
@@ -301,6 +303,24 @@ export default function Home() {
                 </div>
               )}
 
+              <button
+                onClick={() => setShowListening(true)}
+                className="w-full bg-gradient-to-r from-green-500 to-teal-500 rounded-2xl p-4 text-left shadow-lg shadow-green-500/20 hover:shadow-xl transition-all active:scale-[0.98]"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-white/20 rounded-xl flex items-center justify-center">
+                    <span className="text-2xl">🎧</span>
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-white">听力练习</h3>
+                    <p className="text-sm text-white/80">BBC Learning English 视频学习</p>
+                  </div>
+                  <svg className="w-5 h-5 text-white/60" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
+              </button>
+
               <ScenarioSelector
                 scenarios={scenarios}
                 selectedScenario={selectedScenario}
@@ -385,6 +405,12 @@ export default function Home() {
           </>
         )}
       </div>
+
+      {showListening && (
+        <div className="fixed inset-0 bg-white z-50">
+          <ListeningPractice onBack={() => setShowListening(false)} />
+        </div>
+      )}
     </main>
   );
 }
